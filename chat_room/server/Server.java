@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 
 import static java.lang.System.exit;
 
-public class Server extends JFrame implements Runnable{
+public class Server extends JFrame {
     /*
     Accepts clients to the chat room and creates a singleClientHandler for each in order to read messages
     from each one and then broadcast to all clients in the chat room
@@ -84,10 +84,6 @@ public class Server extends JFrame implements Runnable{
         this.maxParticipantsAmount = maxParticipantsAmount;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
-    }
-
     private void initializeAllClientsMaintainer(){
         if (allClientsMaintainer == null) allClientsMaintainer = new AllClientsMaintainer(this);
         else allClientsMaintainer.getConnections().clear();
@@ -99,12 +95,7 @@ public class Server extends JFrame implements Runnable{
         executorService.execute(new SingleClientHandler(connection, allClientsMaintainer));
     }
 
-    public void execute(){
-        connectServerBackground();
-    }
-
-    @Override
-    public void run() {
+    public void processConnections() {
         initializeAllClientsMaintainer();
         try{
             serverSocket = new ServerSocket(DEFAULT_PORT, DEFAULT_QUEUE_LENGTH);
@@ -160,9 +151,14 @@ public class Server extends JFrame implements Runnable{
         connection.close();
     }
 
-    public void connectServerBackground(){
+    public void run(){
         setIsConnected(true);
-        getParticipantsArea().setText(Server.CONNECTED);
-        executorService.execute(this);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                getParticipantsArea().setText(Server.CONNECTED);
+            }
+        });
+        processConnections();
     }
 }

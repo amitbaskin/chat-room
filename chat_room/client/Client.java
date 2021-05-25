@@ -12,9 +12,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-
-public class Client extends JFrame implements Runnable{
+public class Client extends JFrame {
     /*
     The client's end in a connection with the server.
      */
@@ -52,12 +50,9 @@ public class Client extends JFrame implements Runnable{
     private Connection connection;
     private final ConcurrentHashMap<String, ChatParticipant> participants;
     private boolean isClosed;
-    private ClientBackground clientBackground;
-    private final ExecutorService executorService;
 
-    public Client(ExecutorService executorService) {
+    public Client() {
         super(DEFAULT_FRAME_TITLE);
-        this.executorService = executorService;
         participants = new ConcurrentHashMap<>();
         enterField = new JTextField();
         enterField.setEditable(false);
@@ -89,31 +84,28 @@ public class Client extends JFrame implements Runnable{
     public String getMyName() { return myName; }
     public ConcurrentHashMap<String, ChatParticipant> getParticipants() { return participants; }
     public Connection getConnection() { return connection; }
-    public ExecutorService getExecutorService() { return executorService; }
-    public ClientBackground getClientBackground() { return clientBackground; }
     public void setIsClosed(boolean closed) { isClosed = closed; }
     public boolean getIsClosed() { return isClosed; }
     public JTextField getEnterField() { return enterField; }
     public JTextArea getDisplayArea() { return displayArea; }
     public void write(String msg) throws IOException { connection.getOutputObjectStream().writeObject(msg); }
-    public void setClientBackground(ClientBackground clientBackground) {
-        this.clientBackground = clientBackground;
-    }
-
-    public void execute(){
-        getExecutorService().execute(this);
-    }
 
     public void run(){
-        try {
-            connectToServer();
-            if (myName != null) {
-                processConnection();
-                closeConnection();
+        new SwingWorker<Object, Object>() {
+            @Override
+            protected Object doInBackground() {
+                try {
+                    connectToServer();
+                    if (myName != null) {
+                        processConnection();
+                        closeConnection();
+                    }
+                } catch (ConnectionException | IOException e) {
+                    displayArea.setText(DEFAULT_TEXT);
+                }
+                return null;
             }
-        } catch (ConnectionException | IOException e) {
-            displayArea.setText(DEFAULT_TEXT);
-        }
+        }.execute();
     }
 
     private InetAddress getInputHost() throws UnknownHostException {

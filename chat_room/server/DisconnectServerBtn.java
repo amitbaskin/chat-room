@@ -8,11 +8,9 @@ import java.io.IOException;
 public class DisconnectServerBtn extends JButton {
     private static final String DISCONNECT = "Disconnect";
     private static final String DISCONNECTING_MSG = "Disconnecting... Please wait.";
-    private final DisconnectServerBackground serverDisconnectInBackground;
 
     public DisconnectServerBtn(final Server server){
         super(DISCONNECT);
-        serverDisconnectInBackground = new DisconnectServerBackground(server);
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -20,12 +18,14 @@ public class DisconnectServerBtn extends JButton {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            serverDisconnectInBackground.doInBackground();
-//                            server.disconnect();
-                        } catch (IOException exception) {
-                            server.killServer();
-                        } server.getParticipantsArea().setText(Server.DISCONNECTED);
+                        new SwingWorker<Object, Object>() {
+                            @Override
+                            protected Object doInBackground() throws Exception {
+                                server.disconnect();
+                                return null;
+                            }
+                        }.execute();
+                        server.getParticipantsArea().setText(Server.DISCONNECTED);
                     }
                 });
             }

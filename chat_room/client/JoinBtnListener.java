@@ -28,9 +28,7 @@ public class  JoinBtnListener implements ActionListener {
         Connection connection = client.getConnection();
         if (connection == null || client.getIsClosed()) {
             client.getDisplayArea().setText(Client.DEFAULT_TEXT);
-//            client.setClientBackground(new ClientBackground(client));
-//            client.getClientBackground().execute();
-            client.execute();
+            client.run();
         } else errMsg();
     }
 }

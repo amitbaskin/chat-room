@@ -16,7 +16,7 @@ public abstract class Main {
         ExecutorService executorService = Executors.newCachedThreadPool();
         new Server(executorService);
         for (int i = 0; i < INITIAL_CLIENTS_AMOUNT; i++) {
-            new Client(executorService);
+            new Client();
         }
     }
 }

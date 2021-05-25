@@ -6,16 +6,20 @@ import java.awt.event.ActionListener;
 
 public class ConnectServerBtn extends JButton {
     private static final String CONNECT = "Connect";
-    ConnectServerBackground serverConnectInBackground;
 
     public ConnectServerBtn(final Server server){
         super(CONNECT);
-        serverConnectInBackground = new ConnectServerBackground(server);
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                serverConnectInBackground.doInBackground();
-//                server.execute();
+                new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() {
+                        if (!server.isConnected()){
+                            server.run();
+                        } return null;
+                    }
+                }.execute();
             }
         });
     }
