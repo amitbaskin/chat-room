@@ -4,22 +4,24 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * A button for a server to connect
+ */
 public class ConnectServerBtn extends JButton {
     private static final String CONNECT = "Connect";
 
+    /**
+     * Create a new button
+     * @param server The server associated with this button
+     */
     public ConnectServerBtn(final Server server){
         super(CONNECT);
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new SwingWorker<Object, Object>() {
-                    @Override
-                    protected Object doInBackground() {
-                        if (!server.isConnected()){
-                            server.run();
-                        } return null;
-                    }
-                }.execute();
+                if (!server.isConnected()){
+                    server.run();
+                }
             }
         });
     }

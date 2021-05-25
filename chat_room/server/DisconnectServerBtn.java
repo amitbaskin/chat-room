@@ -1,14 +1,19 @@
 package chat_room.server;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
+/**
+ * A button for disconnecting a server
+ */
 public class DisconnectServerBtn extends JButton {
     private static final String DISCONNECT = "Disconnect";
     private static final String DISCONNECTING_MSG = "Disconnecting... Please wait.";
 
+    /**
+     * Create a new button
+     * @param server The server associated with this button
+     */
     public DisconnectServerBtn(final Server server){
         super(DISCONNECT);
         addActionListener(new ActionListener() {
