@@ -146,6 +146,12 @@ public class Server extends JFrame implements Runnable{
         }
     }
 
+    public void disconnect() throws IOException {
+        if (isConnected()) {
+            disconnectInBackground();
+        }
+    }
+
     public void disconnectInBackground() throws IOException {
         Socket socket = new Socket(getServerSocket().getInetAddress(), Server.DEFAULT_PORT);
         Connection connection = new Connection(socket, "");

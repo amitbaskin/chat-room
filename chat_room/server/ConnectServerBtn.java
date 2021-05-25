@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 
 public class ConnectServerBtn extends JButton {
     private static final String CONNECT = "Connect";
-    ConnectServerBackground serverConnectInBackground;
+//    ConnectServerBackground serverConnectInBackground;
 
     public ConnectServerBtn(final Server server){
         super(CONNECT);

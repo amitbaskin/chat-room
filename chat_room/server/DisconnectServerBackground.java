@@ -13,8 +13,7 @@ public class DisconnectServerBackground extends SwingWorker<Object, Object> {
     @Override
     protected Object
     doInBackground() throws IOException {
-        if (server.isConnected()) {
-            server.disconnectInBackground();
-        } return null;
+        server.disconnect();
+        return null;
     }
 }
