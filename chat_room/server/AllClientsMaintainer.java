@@ -5,6 +5,7 @@ import chat_room.Connection;
 import javax.swing.*;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  Used by the singleClientHandler objects in in order to keep track of the clients participating in the
@@ -18,14 +19,16 @@ public class AllClientsMaintainer {
     private static final String MSG_FORMAT = "\n%s %s";
     private final ConcurrentHashMap<String, Connection> connections;
     private final Server server;
+    private final ExecutorService executorService;
 
     /**
      * Create a new maintainer
      * @param server The server associated with this maintainer
      */
-    public AllClientsMaintainer(Server server){
+    public AllClientsMaintainer(Server server, ExecutorService executorService){
         connections = new ConcurrentHashMap<>();
         this.server = server;
+        this.executorService = executorService;
     }
 
     /**
@@ -125,30 +128,32 @@ public class AllClientsMaintainer {
      * @param connection The connection with client to notify
      * @throws IOException In case there's a problem sending a message
      */
-    public void notifyClientOfParticipants(Connection connection) throws IOException {
-        for (String name : connections.keySet()) connection.send(new ChatParticipant(name));
+    public void notifyClientOfParticipants(final Connection connection) {
+        for (final String name : connections.keySet()) {
+            executorService.execute(new MsgSender(connection, new ChatParticipant(name)));
+        }
     }
 
     /**
      * Sending a message to everyone in the chat room except one
      * @param msg The message to send
      * @param specificConnection The connection to exclude
-     * @throws IOException In case there's a problem sending a message
      */
-    public void sendToAllButOne(Object msg, String specificConnection) throws IOException {
+    public void sendToAllButOne(Object msg, String specificConnection) {
         for (String curConnection : connections.keySet()){
-            if (!curConnection.equals(specificConnection)) connections.get(curConnection).send(msg);
+            if (!curConnection.equals(specificConnection)) {
+                executorService.execute(new MsgSender(connections.get(curConnection), msg));
+            }
         }
     }
 
     /**
      * Sends a message to all participants in the chat room
      * @param msg The message to send
-     * @throws IOException In case there's a problem sending a message
      */
-    public void sendToAll(Object msg) throws IOException {
+    public void sendToAll(Object msg) {
         for (Connection curConnection : connections.values()){
-            curConnection.send(msg);
+            executorService.execute(new MsgSender(curConnection, msg));
         }
     }
 

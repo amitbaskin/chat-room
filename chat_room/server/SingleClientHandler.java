@@ -77,11 +77,7 @@ public class SingleClientHandler implements Runnable {
             try {
                 connection.send(Client.TERMINATE);
             } catch (IOException exception) {
-                try {
-                    allClientsMaintainer.sendToAllButOne(new ChatParticipant(connectionName), connectionName);
-                } catch (IOException ioException) {
-                    ioException.printStackTrace();
-                }
+                allClientsMaintainer.sendToAllButOne(new ChatParticipant(connectionName), connectionName);
             }
         }
     }

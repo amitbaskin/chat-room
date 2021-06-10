@@ -158,7 +158,8 @@ public class Server extends JFrame {
      * Initializes the clients' connections' maintainer
      */
     private void initializeAllClientsMaintainer(){
-        if (allClientsMaintainer == null) allClientsMaintainer = new AllClientsMaintainer(this);
+        if (allClientsMaintainer == null) allClientsMaintainer = new AllClientsMaintainer(this,
+                 executorService);
         else allClientsMaintainer.getConnections().clear();
     }
 
